@@ -5,6 +5,7 @@ services:
       - "8080:80"
   backend:
     build: ./backend
+    profiles: ["prod"]
     ports:
       - "1337:1337"
     environment:
