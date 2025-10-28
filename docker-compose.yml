@@ -3,54 +3,37 @@ services:
     build: ./frontend
     ports:
       - "8080:80"
-
   backend:
     build: ./backend
     ports:
       - "1337:1337"
     environment:
-      HOST: "0.0.0.0"
       DATABASE_CLIENT: postgres
       DATABASE_HOST: db
       DATABASE_PORT: 5432
       DATABASE_NAME: strapi
       DATABASE_USERNAME: strapi
       DATABASE_PASSWORD: strapipassword
-    depends_on:
-      - db
-
-  # Optional: development profile for hot-reload
-  backend-dev:
-    build: ./backend
-    profiles: ["dev"]
-    command: npm run develop
-    ports:
-      - "1337:1337"
-    environment:
-      HOST: "0.0.0.0"
-      DATABASE_CLIENT: postgres
-      DATABASE_HOST: db
-      DATABASE_PORT: 5432
-      DATABASE_NAME: strapi
-      DATABASE_USERNAME: strapi
-      DATABASE_PASSWORD: strapipassword
+      DATABASE_SSL: 'false'
+      JWT_SECRET: 'a-super-secret-jwt-key-for-dev'
+      ADMIN_JWT_SECRET: 'a-super-secret-admin-key-for-dev'
+      APP_KEYS: 'key1,key2,key3'
     volumes:
-      - ./backend:/app
-      # Hide host node_modules so container uses Linux-built ones
-      - /app/node_modules
+      - ./backend/config:/app/config
+      - ./backend/src:/app/src
+      - ./backend/package.json:/app/package.json
+      - ./backend/package-lock.json:/app/package-lock.json
     depends_on:
       - db
-
   db:
     image: postgres:14-alpine
     ports:
-      - "5433:5432"
+      - "5432:5432"
     environment:
       POSTGRES_USER: strapi
       POSTGRES_PASSWORD: strapipassword
       POSTGRES_DB: strapi
     volumes:
       - strapi-data:/var/lib/postgresql/data
-
 volumes:
   strapi-data:
