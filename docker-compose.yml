@@ -3,41 +3,57 @@ services:
     build: ./frontend
     ports:
       - "8080:80"
+
   backend:
     build: ./backend
+    profiles: ["prod"]
     ports:
       - "1337:1337"
     environment:
+      HOST: "0.0.0.0"
+      NODE_ENV: "production"
       DATABASE_CLIENT: postgres
       DATABASE_HOST: db
       DATABASE_PORT: 5432
       DATABASE_NAME: strapi
       DATABASE_USERNAME: strapi
       DATABASE_PASSWORD: strapipassword
-      DATABASE_SSL: 'false'
-      JWT_SECRET: 'a-super-secret-jwt-key-for-dev'
-      ADMIN_JWT_SECRET: 'a-super-secret-admin-key-for-dev'
-      APP_KEYS: 'key1,key2,key3'
+    depends_on:
+      - db
+
+  backend-dev:
+    build: ./backend
+    profiles: ["dev"]
+    command: npm run develop
+    ports:
+      - "1337:1337"
+    environment:
+      HOST: "0.0.0.0"
+      NODE_ENV: "development"
+      DATABASE_CLIENT: postgres
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_NAME: strapi
+      DATABASE_USERNAME: strapi
+      DATABASE_PASSWORD: strapipassword
     volumes:
       - ./backend/config:/app/config
       - ./backend/src:/app/src
       - ./backend/package.json:/app/package.json
       - ./backend/package-lock.json:/app/package-lock.json
     depends_on:
-      db:
-        condition: service_healthy
+      - db
+
   db:
     image: postgres:14-alpine
+    ports:
+      - "5433:5432"
     environment:
       POSTGRES_USER: strapi
       POSTGRES_PASSWORD: strapipassword
       POSTGRES_DB: strapi
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U strapi -d strapi"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
     volumes:
       - strapi-data:/var/lib/postgresql/data
+
 volumes:
   strapi-data:
