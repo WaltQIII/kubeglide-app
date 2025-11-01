@@ -24,15 +24,19 @@ services:
       - ./backend/package.json:/app/package.json
       - ./backend/package-lock.json:/app/package-lock.json
     depends_on:
-      - db
+      db:
+        condition: service_healthy
   db:
     image: postgres:14-alpine
-    ports:
-      - "5432:5432"
     environment:
       POSTGRES_USER: strapi
       POSTGRES_PASSWORD: strapipassword
       POSTGRES_DB: strapi
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U strapi -d strapi"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     volumes:
       - strapi-data:/var/lib/postgresql/data
 volumes:
