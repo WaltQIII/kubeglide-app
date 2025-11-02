@@ -1,0 +1,37 @@
+{
+  "kind": "collectionType",
+  "collectionName": "blueprints",
+  "info": {
+    "singularName": "blueprint",
+    "pluralName": "blueprints",
+    "displayName": "Blueprint"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "appName": {
+      "type": "string"
+    },
+    "containerImage": {
+      "type": "string"
+    },
+    "replicas": {
+      "type": "integer"
+    },
+    "environment": {
+      "type": "enumeration",
+      "enum": [
+        "production",
+        "staging",
+        "development"
+      ]
+    },
+    "blueprints": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::blueprint.blueprint"
+    }
+  }
+}
