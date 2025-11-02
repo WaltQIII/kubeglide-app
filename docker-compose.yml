@@ -1,8 +1,18 @@
 services:
   frontend:
     build: ./frontend
+    profiles: ["prod"]
     ports:
       - "8080:80"
+
+  frontend-dev:
+    build: ./frontend
+    profiles: ["dev"]
+    command: npm run dev
+    ports:
+      - "8080:5173"
+    volumes:
+      - ./frontend:/app
 
   backend:
     build: ./backend
